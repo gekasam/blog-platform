@@ -1,0 +1,30 @@
+@import '../../abstracts/variables.scss';
+@import '../../abstracts/mixins.scss';
+
+.tag-wrap {
+  position: relative;
+  padding: 0.2rem 0.6rem 0.3rem 0.5rem;
+  border: 1px solid var(--color-secondary-text);
+  border-radius: 0.2rem;
+  max-width: 8rem;
+  height: 2rem;
+}
+
+.tag-wrap__popup::before {
+  @include popup;
+}
+
+.tag {
+  color: var(--color-secondary-text);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.tag::after {
+  @include fadeOut;
+}
+
+.tag-wrap__popup:hover::before {
+  opacity: 1;
+  visibility: visible;
+}

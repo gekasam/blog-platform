@@ -1,0 +1,12 @@
+.articles-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.6rem;
+  padding-top: 2.6rem;
+}
+
+.articles-list__item {
+  width: 65%;
+  height: 14rem;
+}

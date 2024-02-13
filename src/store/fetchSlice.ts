@@ -3,20 +3,26 @@ import { createSlice, createAsyncThunk, Action, PayloadAction } from '@reduxjs/t
 import type { ArticlesList } from '../models/articles';
 
 type FetchState = {
-  articles: ArticlesList | Record<string, never>;
+  articlesFetchData: {
+    articles: ArticlesList;
+    articlesCount: number;
+  };
   loading: boolean;
   error: string;
 };
 
 const baseURL = 'https://blog.kata.academy/api';
 
-export const fetchArticles = createAsyncThunk<ArticlesList, undefined, { rejectValue: string }>(
+export const fetchArticles = createAsyncThunk<
+  FetchState['articlesFetchData'],
+  number,
+  { rejectValue: string }
+>(
   'fetch/articles',
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async (_, { rejectWithValue }) => {
-    const response = await fetch(`${baseURL}/articls `);
+  async (offset, { rejectWithValue }) => {
+    const response = await fetch(`${baseURL}/articles?limit=5&offset=${offset}`);
     const data = await response.json();
-
     if (!response.ok) {
       return rejectWithValue(`Server Error ${response.status} ${data.errors.message}`);
     }
@@ -25,7 +31,10 @@ export const fetchArticles = createAsyncThunk<ArticlesList, undefined, { rejectV
 );
 
 const initialState: FetchState = {
-  articles: {},
+  articlesFetchData: {
+    articles: [],
+    articlesCount: 0,
+  },
   loading: false,
   error: '',
 };
@@ -44,7 +53,8 @@ const fetchSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchArticles.fulfilled, (state, action) => {
-        state.articles = action.payload;
+        state.articlesFetchData.articles = action.payload.articles;
+        state.articlesFetchData.articlesCount = action.payload.articlesCount;
         state.loading = false;
       })
       .addMatcher(isError, (state, action: PayloadAction<string>) => {

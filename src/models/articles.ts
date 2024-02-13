@@ -3,7 +3,7 @@ export type Article = {
   title: string;
   description: string;
   body: string;
-  tags: string[];
+  tagList: string[];
   createdAt: string;
   updatedAt: string;
   favorited: boolean;
@@ -16,7 +16,4 @@ export type Article = {
   };
 };
 
-export type ArticlesList = {
-  articles: Article[];
-  total: number;
-};
+export type ArticlesList = Article[];

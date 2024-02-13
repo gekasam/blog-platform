@@ -1,6 +1,6 @@
 @import '../../abstracts/variables.scss';
 
-.page-header {
+.app__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -9,28 +9,32 @@
   background-color: var(--color-main-white);
 }
 
-.page-header__logo {
+.app__header__logo {
   color: var(--color-header-text);
   text-decoration: none;
 }
 
-.page-header__controls {
+.app__header__logo__text {
+  font-size: 1.8rem;
+}
+
+.app__header__controls {
   display: flex;
   gap: 2.5rem;
 }
 
-.page-header__control {
+.app__header__control {
   padding: 0.6rem 1.8rem 1rem 1.8rem;
   border: 1px solid var(--color-main-text);
   border-radius: 0.5rem;
   font-size: 1.8rem;
 }
 
-.page-header__control--green {
+.app__header__control--green {
   color: var(--color-green);
   border-color: var(--color-green);
 }
 
-.page-header__control:hover, .page-header__control--green:hover {
+.app__header__control:hover, .app__header__control--green:hover {
   opacity: 0.5;
 }

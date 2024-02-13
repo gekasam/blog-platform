@@ -1,0 +1,27 @@
+@import './variables.scss';
+
+@mixin fadeOut {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0.6rem;
+  height: 100%;
+  background: var(--fadeout-gradient);
+}
+
+@mixin popup {
+  content: attr(data-content);
+  position: absolute;
+  top: 2rem;
+  left: 1rem;
+  max-width: 50vw;
+  background-color: #fff;
+  padding: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  visibility: hidden;
+  opacity: 0;
+  overflow-wrap: break-word;
+  z-index: 1;
+  transition: all 0.2s ease;
+}
