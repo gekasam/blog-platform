@@ -4,9 +4,15 @@
   align-items: center;
   gap: 2.6rem;
   padding-top: 2.6rem;
+  width: 100%;
 }
 
 .articles-list__item {
   width: 65%;
   height: 14rem;
+}
+
+.article-list__pagination {
+  padding-top: 2.6rem;
+  padding-bottom: 1.7rem;
 }

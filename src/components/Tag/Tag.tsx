@@ -6,7 +6,7 @@ import { useDetectOverflow } from '../../hooks';
 import classes from './Tag.module.scss';
 
 export default function Tag({ tag }: { tag: string }) {
-  const [isDivOverflowed, tagRef] = useDetectOverflow<HTMLDivElement>();
+  const [isDivOverflowed, tagRef] = useDetectOverflow<HTMLDivElement>('horizontal');
 
   const tagClasses = classNames({
     [classes['tag-wrap']]: true,

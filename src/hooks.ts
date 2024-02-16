@@ -10,7 +10,9 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 // Custom text overflow hook
 
-export function useDetectOverflow<T extends HTMLElement>(): [boolean, React.RefObject<T>] {
+export function useDetectOverflow<T extends HTMLElement>(
+  direction: 'horizontal' | 'vertical'
+): [boolean, React.RefObject<T>] {
   const [windowWidth, setWindowWidth] = useState(0);
   const [isOverflowed, setIsOverflowed] = useState(false);
   const ref = useRef<T>(null);
@@ -26,11 +28,21 @@ export function useDetectOverflow<T extends HTMLElement>(): [boolean, React.RefO
   }, []);
 
   useEffect(() => {
-    if (ref && ref.current) {
-      if (ref.current.scrollWidth > ref.current.clientWidth) {
-        setIsOverflowed(true);
-      } else {
-        setIsOverflowed(false);
+    if (direction === 'horizontal') {
+      if (ref && ref.current) {
+        if (ref.current.scrollWidth > ref.current.clientWidth) {
+          setIsOverflowed(true);
+        } else {
+          setIsOverflowed(false);
+        }
+      }
+    } else if (direction === 'vertical') {
+      if (ref && ref.current) {
+        if (ref.current.scrollHeight > ref.current.clientHeight) {
+          setIsOverflowed(true);
+        } else {
+          setIsOverflowed(false);
+        }
       }
     }
   }, [windowWidth]);

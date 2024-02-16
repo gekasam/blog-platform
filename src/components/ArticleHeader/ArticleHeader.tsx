@@ -1,25 +1,24 @@
+import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import uniqid from 'uniqid';
 
 import Tag from '../Tag';
-import { useAppSelector, useDetectOverflow } from '../../hooks';
+import { useDetectOverflow } from '../../hooks';
 import like from '../../assets/icons/like.svg';
+import { Article } from '../../models/articles';
 
 import classes from './ArticleHeader.module.scss';
 
 export default function ArticleHeader({
-  articleIdx,
-  standalone = true,
+  article,
+  isStandalone = true,
 }: {
-  articleIdx: number;
-  standalone: boolean;
+  article: Article;
+  isStandalone: boolean;
 }) {
-  const [isTitleOverflow, titleRef] = useDetectOverflow<HTMLHeadingElement>();
-  const [isDescriptionOverflow, descriptionRef] = useDetectOverflow<HTMLHeadingElement>();
-
-  const article = useAppSelector(
-    (state) => state.fetchSlice.articlesFetchData.articles[articleIdx]
-  );
+  const [isTitleOverflow, titleRef] = useDetectOverflow<HTMLHeadingElement>('horizontal');
+  const [isDescriptionOverflow, descriptionRef] =
+    useDetectOverflow<HTMLParagraphElement>('vertical');
 
   const articleCreationDate = () => {
     const partsDate = new Intl.DateTimeFormat('en-US', {
@@ -32,7 +31,8 @@ export default function ArticleHeader({
 
   const headerClasses = classNames({
     [classes.article__header]: true,
-    [classes['article__header--standalone']]: standalone,
+    [classes['article__header--standalone']]: isStandalone,
+    [classes['article__header--full']]: !isStandalone,
   });
 
   const titleClasses = classNames({
@@ -43,6 +43,7 @@ export default function ArticleHeader({
   const descriptionClasses = classNames({
     [classes['article__description-wrap']]: true,
     [classes['article__description-wrap__popup']]: isDescriptionOverflow,
+    [classes['article__description-wrap--full']]: !isStandalone,
   });
 
   const tagItems = article.tagList
@@ -59,7 +60,9 @@ export default function ArticleHeader({
         <div className={classes.article__info}>
           <div className={titleClasses} data-content={article.title}>
             <h2 ref={titleRef} className={classes.article__title}>
-              {article.title}
+              <Link className={classes.article__link} to={`/articles/${article.slug}`}>
+                {article.title}
+              </Link>
             </h2>
             <div className={classes.like}>
               <img className={classes.like__icon} src={like} alt="Like icon" />
@@ -77,12 +80,8 @@ export default function ArticleHeader({
         </div>
       </div>
       {article.description.match(/\S/) ? (
-        <div className={descriptionClasses}>
-          <p
-            ref={descriptionRef}
-            className={classes.article__description}
-            data-content={article.description}
-          >
+        <div className={descriptionClasses} data-content={article.description}>
+          <p ref={descriptionRef} className={classes.article__description}>
             {article.description}
           </p>
         </div>

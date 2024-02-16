@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk, Action, PayloadAction } from '@reduxjs/toolkit';
 
-import type { ArticlesList } from '../models/articles';
+import type { Article, ArticlesList } from '../models/articles';
 
 type FetchState = {
   articlesFetchData: {
     articles: ArticlesList;
     articlesCount: number;
   };
+  currentArticle: Article | null;
   loading: boolean;
   error: string;
 };
@@ -30,11 +31,25 @@ export const fetchArticles = createAsyncThunk<
   }
 );
 
+export const fetchArticle = createAsyncThunk<Article, string, { rejectValue: string }>(
+  'fetch/article',
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async (slug, { rejectWithValue }) => {
+    const response = await fetch(`${baseURL}/articles/${slug}`);
+    const data = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(`Server Error ${response.status} ${data.errors.message}`);
+    }
+    return data.article;
+  }
+);
+
 const initialState: FetchState = {
   articlesFetchData: {
     articles: [],
     articlesCount: 0,
   },
+  currentArticle: null,
   loading: false,
   error: '',
 };
@@ -49,6 +64,13 @@ const fetchSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(fetchArticle.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchArticle.fulfilled, (state, action) => {
+        state.currentArticle = action.payload;
+        state.loading = false;
+      })
       .addCase(fetchArticles.pending, (state) => {
         state.loading = true;
       })

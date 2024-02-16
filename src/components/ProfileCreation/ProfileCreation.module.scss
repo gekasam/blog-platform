@@ -1,0 +1,41 @@
+@import '../../abstracts/mixins.scss';
+
+.form-wrap {
+  padding-top: 5.9rem;
+}
+
+.form-profile-creation {
+  @include form;
+}
+
+.form-profile-creation__title {
+  @include form__title;
+}
+
+.form-profile-creation__data-inputs {
+  @include form__data-inputs;
+}
+
+.form-profile-creation__data-input__lable {
+  @include form__data-input__lable;
+}
+
+.form-profile-creation__data-input {
+  @include form__data-input;
+}
+
+.form-profile-creation__checkbox-input__lable {
+  @include form__checkbox-input__lable;
+}
+
+.form-profile-creation__submit-button {
+  @include form__submit-button;
+}
+
+.form-profile-creation__alternate-option {
+  @include form__alternate-option;
+}
+
+.form-profile-creation__alternate-option__link {
+  @include form__alternate-option__link;
+}

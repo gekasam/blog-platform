@@ -3,10 +3,18 @@
   --color-main-background: #EBEEF3;
   --color-green: #52C41A;
   --color-red: #F5222D;
+  --color-blue: #1890FF;
+  --color-blue-light: rgb(79, 169, 252);
+  --color-input-border: #D9D9D9;
+
   --color-main-text: hsla(0, 0%, 0%, 0.75);
   --color-header-text: hsla(0, 0%, 0%, 0.85);
-  --color-link-text: #1890FF;
   --color-secondary-text: hsla(0, 0%, 0%, 0.5);
+  --color-label-text: #262626;
+  --color-checkbox-text: #595959;
+  --color-placeholder-text: #BFBFBF;
+
+  --color-alternate0option: #8c8c8c;
   --fadeout-gradient: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #ffffff 75%, #ffffff);
   --box-shadow-main: 0 0.4rem 1.2rem 0 rgba(0, 0, 0, 0.15);
 }

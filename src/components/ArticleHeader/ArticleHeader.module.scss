@@ -42,7 +42,6 @@
 .article__title {
   position: relative;
   max-width: 90%;
-  color: var(--color-link-text);
   padding-right: 0.6rem;
   overflow: hidden;
   white-space: nowrap;
@@ -50,6 +49,17 @@
 
 .article__title::after {
   @include fadeOut;
+}
+
+.article__link {
+  color: var(--color-blue);
+  text-decoration: none;
+  &:visited {
+    color: var(--color-blue);
+  }
+  &:hover {
+    color: var(--color-blue-light);
+  }
 }
 
 .like {
@@ -94,16 +104,31 @@
   border-radius: 50%;
 }
 
+.article__description-wrap {
+  position: relative;
+  line-height: 2.2rem;
+  height: 2lh;
+}
+
+.article__description-wrap--full {
+  height: auto;
+}
+
+.article__description-wrap--full .article__description {
+  -webkit-line-clamp: unset;
+}
+
 .article__description {
   position: relative;
   padding-right: 0.6rem;
   overflow: hidden;
-  line-height: 2.2rem;
   width: 70%;
-}
-
-.article__description-wrap {
-  position: relative;
+  height: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  color: var(--color-text-secondary);
+  text-overflow: ellipsis;
 }
 
 .article__description-wrap__popup::before {
