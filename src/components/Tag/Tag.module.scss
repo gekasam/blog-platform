@@ -25,6 +25,5 @@
 }
 
 .tag-wrap__popup:hover::before {
-  opacity: 1;
-  visibility: visible;
+  display: block;
 }

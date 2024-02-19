@@ -47,7 +47,7 @@ export default function ArticleHeader({
   });
 
   const tagItems = article.tagList
-    .filter((tag) => tag.match(/\S/))
+    .filter((tag) => tag?.match(/\S/))
     .map((tag) => (
       <li key={`${article.slug}-${tag}-${uniqid.time()}`}>
         <Tag tag={tag} />
@@ -59,11 +59,11 @@ export default function ArticleHeader({
       <div className={classes.article__header__top}>
         <div className={classes.article__info}>
           <div className={titleClasses} data-content={article.title}>
-            <h2 ref={titleRef} className={classes.article__title}>
-              <Link className={classes.article__link} to={`/articles/${article.slug}`}>
+            <Link className={classes.article__link} to={`/articles/${article.slug}`}>
+              <h2 ref={titleRef} className={classes.article__title}>
                 {article.title}
-              </Link>
-            </h2>
+              </h2>
+            </Link>
             <div className={classes.like}>
               <img className={classes.like__icon} src={like} alt="Like icon" />
               <span className={classes.like__count}>{article.favoritesCount}</span>

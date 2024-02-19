@@ -1,4 +1,5 @@
-import { Pagination, ConfigProvider } from 'antd';
+import { useEffect } from 'react';
+import { Pagination, ConfigProvider, Spin } from 'antd';
 
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { fetchArticles } from '../../store/fetchSlice';
@@ -9,9 +10,16 @@ import classes from './ArticlesList.module.scss';
 export default function ArticlesList() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const dispatch = useAppDispatch();
-  const storeFetch = useAppSelector((state) => state.fetchSlice);
+  const {
+    articlesFetchData: { articles, articlesCount },
+    loading,
+  } = useAppSelector((state) => state.fetchSlice);
 
-  const articleItems = storeFetch.articlesFetchData.articles.map((article) => (
+  useEffect(() => {
+    dispatch(fetchArticles(0));
+  }, []);
+
+  const articleItems = articles.map((article) => (
     <li className={classes['articles-list__item']} key={article.slug}>
       <ArticleHeader isStandalone article={article} />
     </li>
@@ -19,7 +27,7 @@ export default function ArticlesList() {
 
   return (
     <>
-      <ul className={classes['articles-list']}>{articleItems}</ul>
+      {loading ? <Spin /> : <ul className={classes['articles-list']}>{articleItems}</ul>}
       <ConfigProvider
         theme={{
           token: {
@@ -37,7 +45,7 @@ export default function ArticlesList() {
           showSizeChanger={false}
           defaultCurrent={1}
           onChange={(value) => dispatch(fetchArticles(5 * (value - 1)))}
-          total={storeFetch.articlesFetchData.articlesCount}
+          total={articlesCount}
         />
       </ConfigProvider>
     </>

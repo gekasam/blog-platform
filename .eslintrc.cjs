@@ -30,32 +30,33 @@ module.exports = {
       { allowConstantExport: true },
     ],
     indent: ['error', 2],
-    'linebreak-style': [0, 'windows'],
+    'linebreak-style': ['off', 'windows'],
     'react/react-in-jsx-scope': 'off',
-    'react/prop-types': 0,
+    'react/prop-types': 'off',
     'import/no-absolute-path': 'off',
     "indent": "off",
-    'import/no-unresolved': [2, { caseSensitive: false }],
-    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
+    'import/no-unresolved': ['error', { caseSensitive: false }],
+    'react/jsx-filename-extension': ['warn', { extensions: ['.js', '.jsx'] }],
     'jsx-a11y/label-has-associated-control': [
-      2,
+      'error',
       {
         assert: 'nesting',
       },
     ],
     'import/order': [
-      2,
+      'error',
       {
         groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
         'newlines-between': 'always',
       },
     ],
-    'react/jsx-filename-extension': [2, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
+    'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
     'no-param-reassign': ['error', {
       props: true,
       ignorePropertyModificationsFor: [
         'state',
       ]
     }],
+    'react/jsx-props-no-spreading': 'off',
   },
 };

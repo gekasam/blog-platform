@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Spin } from 'antd';
 import Markdown from 'marked-react';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
@@ -29,5 +30,5 @@ export default function Article({ articleSlug }: { articleSlug: string }) {
     );
   }
 
-  return <div className={classes['article-wrap']}>{!loading && renderArticle()}</div>;
+  return loading ? <Spin /> : <div className={classes['article-wrap']}>{renderArticle()}</div>;
 }

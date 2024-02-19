@@ -1,0 +1,37 @@
+@import '../../abstracts/mixins.scss';
+
+.form-wrap {
+  padding-top: 1.5%;
+}
+
+.form-edit-profile {
+  @include form;
+}
+
+.form-edit-profile__title {
+  @include form__title;
+}
+
+.form-edit-profile__data-inputs {
+  @include form__data-inputs;
+}
+
+.form-edit-profile__data-input__lable {
+  @include form__data-input__lable;
+}
+
+.form-edit-profile__data-input {
+  @include form__data-input;
+}
+
+.form-edit-profile__data-input--warning {
+  @include form__data-input--warning
+}
+
+.form-edit-profile__submit-button {
+  @include form__submit-button;
+}
+
+.form-edit-profile__warning {
+  @include warning;
+}

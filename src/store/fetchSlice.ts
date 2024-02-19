@@ -1,15 +1,19 @@
 import { createSlice, createAsyncThunk, Action, PayloadAction } from '@reduxjs/toolkit';
 
 import type { Article, ArticlesList } from '../models/articles';
+import { ProfileEditingBody, User, UserCreationBody, UserLoginBody } from '../models/users';
 
 type FetchState = {
   articlesFetchData: {
     articles: ArticlesList;
     articlesCount: number;
   };
+  usersFetchData: {
+    currentUser: User | null;
+  };
   currentArticle: Article | null;
   loading: boolean;
-  error: string;
+  error: string | { username?: string; email?: string };
 };
 
 const baseURL = 'https://blog.kata.academy/api';
@@ -44,10 +48,99 @@ export const fetchArticle = createAsyncThunk<Article, string, { rejectValue: str
   }
 );
 
+export const fetchCreateUser = createAsyncThunk<User, UserCreationBody, { rejectValue: string }>(
+  'fetch/createUser',
+  async (body, { rejectWithValue }) => {
+    const response = await fetch(`${baseURL}/usersk`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      if (!('username' in data.errors) && !('email' in data.errors)) {
+        if ('email or password' in data.errors) {
+          return rejectWithValue('Error, email or password is invalid');
+        }
+        return rejectWithValue(`Error, ${data.errors.message}`);
+      }
+      return rejectWithValue(data.errors);
+    }
+    return data.user;
+  }
+);
+
+export const fetchLogin = createAsyncThunk<User, UserLoginBody, { rejectValue: string }>(
+  'fetch/login',
+  async (body, { rejectWithValue }) => {
+    const response = await fetch(`${baseURL}/users/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      const message = Object.entries(data.errors)
+        .map(({ 0: key, 1: value }) => `${key} ${value}`)
+        .join(' ');
+      return rejectWithValue(`Error, ${message}`);
+    }
+    return data.user;
+  }
+);
+
+export const fetchUser = createAsyncThunk<User, string, { rejectValue: string }>(
+  'fetch/user',
+  async (token, { rejectWithValue }) => {
+    const response = await fetch(`${baseURL}/user`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Token ${token}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(`Server Error ${response.status} ${data.errors.message}`);
+    }
+    return data.user;
+  }
+);
+
+export const fetchProfileEdit = createAsyncThunk<
+  User,
+  { body: ProfileEditingBody; token: string },
+  { rejectValue: string }
+>('fetch/profileEdit', async (editArgs, { rejectWithValue }) => {
+  const response = await fetch(`${baseURL}/user`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${editArgs.token}`,
+    },
+    body: JSON.stringify(editArgs.body),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    if (!('username' in data.errors) && !('email' in data.errors)) {
+      return rejectWithValue(`Error, ${data.errors.message}`);
+    }
+    return rejectWithValue(data.errors);
+  }
+  return data.user;
+});
+
 const initialState: FetchState = {
   articlesFetchData: {
     articles: [],
     articlesCount: 0,
+  },
+  usersFetchData: {
+    currentUser: null,
   },
   currentArticle: null,
   loading: false,
@@ -61,10 +154,28 @@ function isError(action: Action) {
 const fetchSlice = createSlice({
   name: 'fetch',
   initialState,
-  reducers: {},
+  reducers: {
+    logOut: (state) => {
+      localStorage.removeItem('token');
+      state.usersFetchData.currentUser = null;
+    },
+    clearError: (state, action) => {
+      if (action.payload === 'all') {
+        state.error = '';
+      } else if (typeof state.error === 'object' && action.payload === 'email') {
+        delete state.error.email;
+      } else if (typeof state.error === 'object' && action.payload === 'username') {
+        delete state.error.username;
+      }
+      if (!Object.keys(state.error).length) {
+        state.error = '';
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchArticle.pending, (state) => {
+        state.error = '';
         state.loading = true;
       })
       .addCase(fetchArticle.fulfilled, (state, action) => {
@@ -72,6 +183,7 @@ const fetchSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchArticles.pending, (state) => {
+        state.error = '';
         state.loading = true;
       })
       .addCase(fetchArticles.fulfilled, (state, action) => {
@@ -79,10 +191,49 @@ const fetchSlice = createSlice({
         state.articlesFetchData.articlesCount = action.payload.articlesCount;
         state.loading = false;
       })
+      .addCase(fetchCreateUser.pending, (state) => {
+        state.error = '';
+        state.loading = true;
+      })
+      .addCase(fetchCreateUser.fulfilled, (state, action) => {
+        state.usersFetchData.currentUser = action.payload;
+        localStorage.setItem('token', action.payload.token);
+        state.loading = false;
+      })
+      .addCase(fetchLogin.pending, (state) => {
+        state.error = '';
+        state.loading = true;
+      })
+      .addCase(fetchLogin.fulfilled, (state, action) => {
+        state.usersFetchData.currentUser = action.payload;
+        localStorage.setItem('token', action.payload.token);
+        state.loading = false;
+      })
+      .addCase(fetchUser.pending, (state) => {
+        state.error = '';
+        state.loading = true;
+      })
+      .addCase(fetchUser.fulfilled, (state, action) => {
+        state.usersFetchData.currentUser = action.payload;
+        localStorage.setItem('token', action.payload.token);
+        state.loading = false;
+      })
+      .addCase(fetchProfileEdit.pending, (state) => {
+        state.error = '';
+        state.loading = true;
+      })
+      .addCase(fetchProfileEdit.fulfilled, (state, action) => {
+        state.usersFetchData.currentUser = action.payload;
+        localStorage.setItem('token', action.payload.token);
+        state.loading = false;
+      })
       .addMatcher(isError, (state, action: PayloadAction<string>) => {
         state.error = action.payload;
+        state.loading = false;
       });
   },
 });
 
-export default fetchSlice;
+export const { clearError, logOut } = fetchSlice.actions;
+
+export default fetchSlice.reducer;

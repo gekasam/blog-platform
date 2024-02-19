@@ -19,11 +19,9 @@
   background-color: var(--color-main-white);
   padding: 1rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  visibility: hidden;
-  opacity: 0;
+  display: none;
   overflow-wrap: break-word;
   z-index: 1;
-  transition: all 0.2s ease;
 }
 
 // Form mixins
@@ -42,6 +40,7 @@
 @mixin form__title {
   font-weight: 500;
   padding-bottom: 2.1rem;
+  text-align: center;
 }
 
 @mixin form__data-inputs {
@@ -71,6 +70,11 @@
   &::placeholder {
     color: var(--color-placeholder-text);
   }
+}
+
+@mixin form__data-input--warning {
+  border: 1px solid var(--color-red);
+  outline-color: var(--color-red);
 }
 
 @mixin form__checkbox-input__lable {
@@ -104,11 +108,16 @@
 @mixin form__alternate-option__link {
   color: var(--color-blue);
   text-decoration: none;
+  padding-left: 0.2rem;
   &:visited {
     color: var(--color-blue);
   }
   &:hover {
     color: var(--color-blue-light);
   }
+}
+
+@mixin warning {
+  color: var(--color-red);
 }
 

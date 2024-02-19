@@ -1,22 +1,15 @@
-import { useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-import { useAppDispatch /* , useAppSelector  */ } from '../../hooks';
-import { fetchArticles } from '../../store/fetchSlice';
 import AppHeader from '../AppHeader';
 import ArticlesList from '../ArticlesList';
 import Article from '../Article';
-import ProfileCreation from '../ProfileCreation';
+import SignUp from '../SignUp';
+import SignIn from '../SignIn';
+import EditProfile from '../EditProfile';
 
 import classes from './App.module.scss';
 
 function App() {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(fetchArticles(0));
-  }, []);
-
   return (
     <Router>
       <div className={classes.app}>
@@ -30,7 +23,9 @@ function App() {
                 return <Article articleSlug={slug} />;
               }}
             />
-            <Route path="/sign-up" component={ProfileCreation} />
+            <Route path="/sign-up" component={SignUp} />
+            <Route path="/sign-in" component={SignIn} />
+            <Route path="/profile" component={EditProfile} />
             <Route path="/" component={ArticlesList} />
           </Switch>
         </main>

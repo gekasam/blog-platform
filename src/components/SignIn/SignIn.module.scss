@@ -1,0 +1,45 @@
+@import '../../abstracts/mixins.scss';
+
+.form-wrap {
+  padding-top: 1.5%;
+}
+
+.form-sign-in {
+  @include form;
+}
+
+.form-sign-in__title {
+  @include form__title;
+}
+
+.form-sign-in__data-inputs {
+  @include form__data-inputs;
+}
+
+.form-sign-in__data-input__lable {
+  @include form__data-input__lable;
+}
+
+.form-sign-in__data-input {
+  @include form__data-input;
+}
+
+.form-sign-in__data-input--warning {
+  @include form__data-input--warning;
+}
+
+.form-sign-in__submit-button {
+  @include form__submit-button;
+}
+
+.form-sign-in__alternate-option {
+  @include form__alternate-option;
+}
+
+.form-sign-in__alternate-option__link {
+  @include form__alternate-option__link;
+}
+
+.form-sign-in__warning {
+  @include warning;
+}
