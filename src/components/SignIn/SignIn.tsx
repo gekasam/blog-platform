@@ -4,7 +4,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { clearError, fetchLogin } from '../../store/fetchSlice';
+import { clearCurrentArticle, clearError, fetchLogin } from '../../store/fetchSlice';
 
 import classes from './SignIn.module.scss';
 
@@ -32,7 +32,7 @@ export default function SignIn() {
       })
     );
   };
-
+  dispatch(clearCurrentArticle());
   useEffect(() => {
     if (submitCount && !error && !loading && !isSubmitting && !Object.keys(errors).length) {
       history.push('/');
@@ -58,7 +58,12 @@ export default function SignIn() {
               className={dataInputClasses('email')}
               type="email"
               placeholder="Email address"
-              {...register('email', { required: 'This field is required' })}
+              {...register('email', {
+                required: 'This field is required',
+                validate: {
+                  positive: (value) => !/[A-Z]/.test(value) || 'Email should be in lowercase',
+                },
+              })}
             />
             {errors.email && (
               <span className={classes['form-sign-in__warning']}>{errors.email.message}</span>
@@ -84,9 +89,6 @@ export default function SignIn() {
         >
           Login
         </button>
-        {error && typeof error === 'string' && (
-          <span className={classes['form-sign-in__warning']}>{error}</span>
-        )}
         <span className={classes['form-sign-in__alternate-option']}>
           Don’t have an account?
           <Link

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Pagination, ConfigProvider, Spin } from 'antd';
 
 import { useAppSelector, useAppDispatch } from '../../hooks';
-import { fetchArticles } from '../../store/fetchSlice';
+import { fetchArticles, clearCurrentArticle, clearDeleteState } from '../../store/fetchSlice';
 import ArticleHeader from '../ArticleHeader';
 
 import classes from './ArticlesList.module.scss';
@@ -16,6 +16,8 @@ export default function ArticlesList() {
   } = useAppSelector((state) => state.fetchSlice);
 
   useEffect(() => {
+    dispatch(clearDeleteState());
+    dispatch(clearCurrentArticle());
     dispatch(fetchArticles(0));
   }, []);
 

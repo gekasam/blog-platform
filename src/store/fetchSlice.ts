@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, Action, PayloadAction } from '@reduxjs/toolkit';
 
-import type { Article, ArticlesList } from '../models/articles';
+import type { Article, ArticlesList, CreateArticleBody } from '../models/articles';
 import { ProfileEditingBody, User, UserCreationBody, UserLoginBody } from '../models/users';
 
 type FetchState = {
@@ -14,6 +14,7 @@ type FetchState = {
   currentArticle: Article | null;
   loading: boolean;
   error: string | { username?: string; email?: string };
+  isDeleteSucsess: boolean;
 };
 
 const baseURL = 'https://blog.kata.academy/api';
@@ -51,7 +52,7 @@ export const fetchArticle = createAsyncThunk<Article, string, { rejectValue: str
 export const fetchCreateUser = createAsyncThunk<User, UserCreationBody, { rejectValue: string }>(
   'fetch/createUser',
   async (body, { rejectWithValue }) => {
-    const response = await fetch(`${baseURL}/usersk`, {
+    const response = await fetch(`${baseURL}/users`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -115,14 +116,14 @@ export const fetchProfileEdit = createAsyncThunk<
   User,
   { body: ProfileEditingBody; token: string },
   { rejectValue: string }
->('fetch/profileEdit', async (editArgs, { rejectWithValue }) => {
+>('fetch/profileEdit', async (args, { rejectWithValue }) => {
   const response = await fetch(`${baseURL}/user`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Token ${editArgs.token}`,
+      Authorization: `Token ${args.token}`,
     },
-    body: JSON.stringify(editArgs.body),
+    body: JSON.stringify(args.body),
   });
   const data = await response.json();
   if (!response.ok) {
@@ -132,6 +133,64 @@ export const fetchProfileEdit = createAsyncThunk<
     return rejectWithValue(data.errors);
   }
   return data.user;
+});
+
+export const fetchCreateArticle = createAsyncThunk<
+  Article,
+  { body: CreateArticleBody; token: string },
+  { rejectValue: string }
+>('fetch/createArticle', async (args, { rejectWithValue }) => {
+  const response = await fetch(`${baseURL}/articles`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${args.token}`,
+    },
+    body: JSON.stringify(args.body),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    return rejectWithValue(data.errors.message);
+  }
+  return data.article;
+});
+
+export const fetchEditArticle = createAsyncThunk<
+  Article,
+  { body: CreateArticleBody; token: string; slug: string },
+  { rejectValue: string }
+>('fetch/editArticle', async (args, { rejectWithValue }) => {
+  const response = await fetch(`${baseURL}/articles/${args.slug}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${args.token}`,
+    },
+    body: JSON.stringify(args.body),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    return rejectWithValue(data.errors.message);
+  }
+  return data.article;
+});
+
+export const fetchDeleteArticle = createAsyncThunk<
+  string,
+  { token: string; slug: string },
+  { rejectValue: string }
+>('fetch/deleteArticle', async (args, { rejectWithValue }) => {
+  const response = await fetch(`${baseURL}/articles/${args.slug}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Token ${args.token}`,
+    },
+  });
+  if (!response.ok) {
+    const data = await response.json();
+    return rejectWithValue(`Error, ${data.errors.message}`);
+  }
+  return '';
 });
 
 const initialState: FetchState = {
@@ -145,6 +204,7 @@ const initialState: FetchState = {
   currentArticle: null,
   loading: false,
   error: '',
+  isDeleteSucsess: false,
 };
 
 function isError(action: Action) {
@@ -171,6 +231,12 @@ const fetchSlice = createSlice({
         state.error = '';
       }
     },
+    clearCurrentArticle: (state) => {
+      state.currentArticle = null;
+    },
+    clearDeleteState: (state) => {
+      state.isDeleteSucsess = false;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -190,6 +256,30 @@ const fetchSlice = createSlice({
         state.articlesFetchData.articles = action.payload.articles;
         state.articlesFetchData.articlesCount = action.payload.articlesCount;
         state.loading = false;
+      })
+      .addCase(fetchCreateArticle.pending, (state) => {
+        state.error = '';
+        state.loading = true;
+      })
+      .addCase(fetchCreateArticle.fulfilled, (state, action) => {
+        state.currentArticle = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchEditArticle.pending, (state) => {
+        state.error = '';
+        state.loading = true;
+      })
+      .addCase(fetchEditArticle.fulfilled, (state, action) => {
+        state.currentArticle = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchDeleteArticle.pending, (state) => {
+        state.error = '';
+        state.loading = true;
+      })
+      .addCase(fetchDeleteArticle.fulfilled, (state) => {
+        state.loading = false;
+        state.isDeleteSucsess = true;
       })
       .addCase(fetchCreateUser.pending, (state) => {
         state.error = '';
@@ -234,6 +324,6 @@ const fetchSlice = createSlice({
   },
 });
 
-export const { clearError, logOut } = fetchSlice.actions;
+export const { clearError, logOut, clearCurrentArticle, clearDeleteState } = fetchSlice.actions;
 
 export default fetchSlice.reducer;

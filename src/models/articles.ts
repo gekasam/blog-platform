@@ -16,4 +16,13 @@ export type Article = {
   };
 };
 
+export type CreateArticleBody = {
+  article: {
+    title: string;
+    description: string;
+    body: string;
+    tagList: string[];
+  };
+};
+
 export type ArticlesList = Article[];

@@ -1,4 +1,5 @@
 @import '../../abstracts/variables.scss';
+@import '../../abstracts/mixins.scss';
 
 .app-header {
   display: flex;
@@ -57,4 +58,8 @@
 
 .app-header__control:hover, .app-header__control--green:hover {
   opacity: 0.5;
+}
+
+.app-error__warning {
+  @include warning;
 }

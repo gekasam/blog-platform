@@ -8,6 +8,8 @@
   border-radius: 0.2rem;
   max-width: 11rem;
   height: 2rem;
+  display: flex;
+  align-items: center;
 }
 
 .tag-wrap__popup::before {

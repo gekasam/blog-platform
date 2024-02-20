@@ -1,11 +1,15 @@
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 import uniqid from 'uniqid';
+import { Popover } from 'antd';
 
+import { fetchDeleteArticle } from '../../store/fetchSlice';
 import Tag from '../Tag';
-import { useDetectOverflow } from '../../hooks';
+import { useAppDispatch, useAppSelector, useDetectOverflow } from '../../hooks';
 import like from '../../assets/icons/like.svg';
 import { Article } from '../../models/articles';
+import warningIcon from '../../assets/icons/warning.svg';
 
 import classes from './ArticleHeader.module.scss';
 
@@ -16,9 +20,27 @@ export default function ArticleHeader({
   article: Article;
   isStandalone: boolean;
 }) {
+  const history = useHistory();
+  const token = localStorage.getItem('token');
+  /*   const [isFetchDelete, setIsFetchDelete] = useState(false); */
+  const [deletePopupOpen, setDeletePopupOpen] = useState(false);
   const [isTitleOverflow, titleRef] = useDetectOverflow<HTMLHeadingElement>('horizontal');
   const [isDescriptionOverflow, descriptionRef] =
     useDetectOverflow<HTMLParagraphElement>('vertical');
+  const {
+    loading,
+    currentArticle,
+    isDeleteSucsess,
+    usersFetchData: { currentUser },
+  } = useAppSelector((state) => state.fetchSlice);
+  const dispatch = useAppDispatch();
+  let atricleAuthor;
+  let currentUsername;
+
+  if (currentArticle && currentUser) {
+    atricleAuthor = currentArticle.author.username;
+    currentUsername = currentUser.username;
+  }
 
   const articleCreationDate = () => {
     const partsDate = new Intl.DateTimeFormat('en-US', {
@@ -54,6 +76,16 @@ export default function ArticleHeader({
       </li>
     ));
 
+  const handleOpenChange = (newOpen: boolean) => {
+    setDeletePopupOpen(newOpen);
+  };
+
+  useEffect(() => {
+    if (!loading && isDeleteSucsess) {
+      history.push('/');
+    }
+  }, [isDeleteSucsess]);
+
   return (
     <header className={headerClasses}>
       <div className={classes.article__header__top}>
@@ -79,13 +111,72 @@ export default function ArticleHeader({
           <img className={classes.author__avatar} src={article.author.image} alt="Author avatar" />
         </div>
       </div>
-      {article.description.match(/\S/) ? (
-        <div className={descriptionClasses} data-content={article.description}>
-          <p ref={descriptionRef} className={classes.article__description}>
-            {article.description}
-          </p>
-        </div>
-      ) : null}
+      <div className={classes.article__header__bottom}>
+        {article.description?.match(/\S/) ? (
+          <div className={descriptionClasses} data-content={article.description}>
+            <p ref={descriptionRef} className={classes.article__description}>
+              {article.description}
+            </p>
+          </div>
+        ) : null}
+        {token && atricleAuthor === currentUsername && currentArticle && !isStandalone && (
+          <div className={classes['article__change-buttons-wrap']}>
+            <Popover
+              placement="rightTop"
+              trigger="click"
+              open={deletePopupOpen}
+              onOpenChange={handleOpenChange}
+              content={
+                <div className={classes.delete__popup}>
+                  <div className={classes['delete__warning-message']}>
+                    <img
+                      className={classes['delete__warning-message__icon']}
+                      src={warningIcon}
+                      aria-hidden
+                      alt="Warning Icon"
+                    />
+                    <span>Are you shure to delete this article?</span>
+                  </div>
+                  <div className={classes['delete__change-buttons']}>
+                    <button
+                      type="button"
+                      className={`${classes.delete__button} ${classes['delete__button-no']}`}
+                      onClick={() => setDeletePopupOpen(false)}
+                    >
+                      No
+                    </button>
+                    <button
+                      type="button"
+                      className={`${classes.delete__button} ${classes['delete__button-yes']}`}
+                      onClick={() => {
+                        /* setIsFetchDelete(true); */
+                        dispatch(fetchDeleteArticle({ token, slug: currentArticle.slug }));
+                      }}
+                    >
+                      Yes
+                    </button>
+                  </div>
+                </div>
+              }
+            >
+              <button
+                type="button"
+                className={`${classes['article__change-button']} ${classes['article__change-button--delete']}`}
+              >
+                Delete
+              </button>
+            </Popover>
+            <Link to={`/articles/${currentArticle.slug}/edit`}>
+              <button
+                type="button"
+                className={`${classes['article__change-button']} ${classes['article__change-button--edit']}`}
+              >
+                Edit
+              </button>
+            </Link>
+          </div>
+        )}
+      </div>
     </header>
   );
 }

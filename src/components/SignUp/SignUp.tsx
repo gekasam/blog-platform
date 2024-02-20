@@ -4,7 +4,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { clearError, fetchCreateUser } from '../../store/fetchSlice';
+import { clearCurrentArticle, clearError, fetchCreateUser } from '../../store/fetchSlice';
 
 import classes from './SignUp.module.scss';
 
@@ -36,7 +36,7 @@ export default function SignUp() {
       })
     );
   };
-
+  dispatch(clearCurrentArticle());
   useEffect(() => {
     if (submitCount && !error && !loading && !isSubmitting && !Object.keys(errors).length) {
       history.push('/');
@@ -103,6 +103,9 @@ export default function SignUp() {
               placeholder="Email address"
               {...register('email', {
                 required: 'This field is required',
+                validate: {
+                  positive: (value) => !/[A-Z]/.test(value) || 'Email should be in lowercase',
+                },
                 onChange: () => {
                   dispatch(clearError('email'));
                 },
@@ -167,9 +170,6 @@ export default function SignUp() {
         >
           Create
         </button>
-        {error && typeof error === 'string' && (
-          <span className={classes['form-sign-up__warning']}>{error}</span>
-        )}
         <span className={classes['form-sign-up__alternate-option']}>
           Already have an account?
           <Link

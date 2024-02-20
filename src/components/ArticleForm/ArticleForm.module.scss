@@ -1,0 +1,103 @@
+@import '../../abstracts/variables.scss';
+@import '../../abstracts/mixins.scss';
+
+.form-wrap {
+  padding-top: 3.4rem;
+  padding-bottom: 2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.article-form {
+  font-family: Roboto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: var(--color-main-white);
+  box-shadow: var(--box-shadow-main);
+  border-radius: 0.6rem;
+  width: 72%;
+  padding: 4.8rem 3.2rem;
+  gap: 2.1rem;
+}
+
+.article-form__header {
+  font-weight: 500;
+  color: var(--color-label-text);
+  align-self: center;
+}
+
+.article-form__data-input__label {
+  @include form__data-input__lable;
+  width: 100%;
+}
+
+.article-form__data-input {
+  @include form__data-input;
+}
+
+.article-form__data-input--warning {
+  @include form__data-input--warning;
+}
+
+.article-form__data-input--textarea {
+  resize: none;
+  overflow: auto;
+  height: auto;
+}
+
+.article-form__tags-section {
+  display: flex;
+  flex-direction: column;
+  color: var(--color-label-text);
+  font-size: 1.4rem;
+  line-height: 2.2rem;
+}
+
+.article-form__tags-editing-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.7rem;
+}
+
+.article-form__tag-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.article-form__tag-wrap {
+  display: flex;
+  gap: 1.7rem;
+}
+
+.article-form__data-input--tag {
+  width: 30rem;
+}
+
+.article-form__tag-button {
+  @include hollow-button;
+}
+
+.article-form__tag-delete-button {
+  color: var(--color-red);
+  padding-left: 3.6rem;
+  padding-right: 3.6rem;
+}
+
+.article-form__tag-add-button {
+  color: var(--color-blue);
+  padding-left: 4rem;
+  padding-right: 4rem;
+}
+
+.article-form__submit-button {
+  @include form__submit-button;
+  width: 31.9rem;
+}
+
+.article-form__warning {
+  @include warning;
+}
