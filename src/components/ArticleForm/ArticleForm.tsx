@@ -5,6 +5,7 @@ import uniqid from 'uniqid';
 import classNames from 'classnames';
 
 import {
+  clearCurrentArticle,
   clearError,
   fetchArticle,
   fetchCreateArticle,
@@ -23,34 +24,45 @@ type Inputs = {
 
 export default function ArticleForm({ articleSlug = null }: { articleSlug: string | null }) {
   const history = useHistory();
-  const currentEditingArticle = useAppSelector((state) => state.fetchSlice.currentArticle);
-  const title = currentEditingArticle?.title || '';
-  const description = currentEditingArticle?.description || '';
-  const text = currentEditingArticle?.body || '';
-  const token = localStorage.getItem('token');
-  const { error, loading, currentArticle } = useAppSelector((state) => state.fetchSlice);
+  const {
+    error,
+    loading,
+    currentArticle,
+    usersFetchData: { currentUser },
+  } = useAppSelector((state) => state.fetchSlice);
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if (articleSlug) {
-      dispatch(fetchArticle({ slug: articleSlug, token: null }));
-    }
-  }, [dispatch, articleSlug]);
+  const title = currentArticle?.title || '';
+  const description = currentArticle?.description || '';
+  const text = currentArticle?.body || '';
+  const token = localStorage.getItem('token');
 
   const {
     register,
     handleSubmit,
     control,
+    reset,
     formState: { submitCount, isSubmitting, errors },
   } = useForm<Inputs>({
     defaultValues: {
       tags:
-        (currentEditingArticle?.tagList && [
-          ...currentEditingArticle.tagList.map((tag) => ({ name: `${tag}` })),
+        (currentArticle?.tagList && [
+          ...currentArticle.tagList.map((tag) => ({ name: `${tag}` })),
         ]) ||
         [],
     },
   });
+
+  useEffect(() => {
+    if (articleSlug) {
+      dispatch(fetchArticle({ slug: articleSlug, token: null }));
+    } else {
+      dispatch(clearCurrentArticle());
+      reset();
+      reset({
+        tags: [],
+      });
+    }
+  }, [dispatch, articleSlug]);
 
   useEffect(() => {
     if (submitCount && !error && !loading && !isSubmitting && !Object.keys(errors).length) {
@@ -101,7 +113,8 @@ export default function ArticleForm({ articleSlug = null }: { articleSlug: strin
     });
   }
 
-  return !token ? (
+  return !token ||
+    (currentArticle && currentUser && currentArticle.author.username !== currentUser.username) ? (
     <Redirect to="/sign-in" />
   ) : (
     <div className={classes['form-wrap']}>
