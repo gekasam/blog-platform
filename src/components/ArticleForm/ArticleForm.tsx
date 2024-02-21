@@ -150,7 +150,7 @@ export default function ArticleForm({ articleSlug = null }: { articleSlug: strin
           Tags
           <div className={classes['article-form__tags-editing-wrap']}>
             <ul className={classes['article-form__tag-list']}>
-              {fields.map((tag, index) => (
+              {fields.map((_, index) => (
                 <li key={uniqid.time('tag-')} className={classes['article-form__tag-wrap']}>
                   <input
                     className={`${classes['article-form__data-input']} ${classes['article-form__data-input--tag']}`}
