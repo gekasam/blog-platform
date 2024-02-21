@@ -33,7 +33,7 @@ export default function ArticleForm({ articleSlug = null }: { articleSlug: strin
 
   useEffect(() => {
     if (articleSlug) {
-      dispatch(fetchArticle(articleSlug));
+      dispatch(fetchArticle({ slug: articleSlug, token: null }));
     }
   }, [dispatch, articleSlug]);
 

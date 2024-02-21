@@ -46,7 +46,9 @@ export default function EditProfile() {
         })
       );
   };
-  dispatch(clearCurrentArticle());
+  useEffect(() => {
+    dispatch(clearCurrentArticle());
+  }, []);
   useEffect(() => {
     if (submitCount && !error && !loading && !isSubmitting && !Object.keys(errors).length) {
       history.push('/');

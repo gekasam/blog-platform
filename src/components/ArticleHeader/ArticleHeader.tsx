@@ -4,10 +4,15 @@ import classNames from 'classnames';
 import uniqid from 'uniqid';
 import { Popover } from 'antd';
 
-import { fetchDeleteArticle } from '../../store/fetchSlice';
+import {
+  fetchDeleteArticle,
+  fetchFavoriteArticle,
+  fetchUnfavoriteArticle,
+} from '../../store/fetchSlice';
 import Tag from '../Tag';
 import { useAppDispatch, useAppSelector, useDetectOverflow } from '../../hooks';
 import like from '../../assets/icons/like.svg';
+import likeFill from '../../assets/icons/likeFill.svg';
 import { Article } from '../../models/articles';
 import warningIcon from '../../assets/icons/warning.svg';
 
@@ -22,23 +27,19 @@ export default function ArticleHeader({
 }) {
   const history = useHistory();
   const token = localStorage.getItem('token');
-  /*   const [isFetchDelete, setIsFetchDelete] = useState(false); */
   const [deletePopupOpen, setDeletePopupOpen] = useState(false);
   const [isTitleOverflow, titleRef] = useDetectOverflow<HTMLHeadingElement>('horizontal');
   const [isDescriptionOverflow, descriptionRef] =
     useDetectOverflow<HTMLParagraphElement>('vertical');
   const {
     loading,
-    currentArticle,
     isDeleteSucsess,
     usersFetchData: { currentUser },
   } = useAppSelector((state) => state.fetchSlice);
   const dispatch = useAppDispatch();
-  let atricleAuthor;
   let currentUsername;
 
-  if (currentArticle && currentUser) {
-    atricleAuthor = currentArticle.author.username;
+  if (currentUser) {
     currentUsername = currentUser.username;
   }
 
@@ -86,6 +87,20 @@ export default function ArticleHeader({
     }
   }, [isDeleteSucsess]);
 
+  function handleLike() {
+    if (token) {
+      if (!article.favorited) {
+        dispatch(fetchFavoriteArticle({ token, slug: article.slug }));
+      } else {
+        dispatch(fetchUnfavoriteArticle({ token, slug: article.slug }));
+      }
+    }
+  }
+
+  const likeClasses = classNames(classes.like, {
+    [classes['like--disabled']]: !token,
+  });
+
   return (
     <header className={headerClasses}>
       <div className={classes.article__header__top}>
@@ -96,10 +111,14 @@ export default function ArticleHeader({
                 {article.title}
               </h2>
             </Link>
-            <div className={classes.like}>
-              <img className={classes.like__icon} src={like} alt="Like icon" />
+            <button type="button" className={likeClasses} onClick={handleLike}>
+              {article.favorited ? (
+                <img className={classes.like__icon} src={likeFill} alt="Like fill icon" />
+              ) : (
+                <img className={classes.like__icon} src={like} alt="Like icon" />
+              )}
               <span className={classes.like__count}>{article.favoritesCount}</span>
-            </div>
+            </button>
           </div>
           {tagItems.length ? <ul className={classes['article__tag-list']}>{tagItems}</ul> : null}
         </div>
@@ -119,7 +138,7 @@ export default function ArticleHeader({
             </p>
           </div>
         ) : null}
-        {token && atricleAuthor === currentUsername && currentArticle && !isStandalone && (
+        {token && article.author.username === currentUsername && !isStandalone && (
           <div className={classes['article__change-buttons-wrap']}>
             <Popover
               placement="rightTop"
@@ -149,8 +168,7 @@ export default function ArticleHeader({
                       type="button"
                       className={`${classes.delete__button} ${classes['delete__button-yes']}`}
                       onClick={() => {
-                        /* setIsFetchDelete(true); */
-                        dispatch(fetchDeleteArticle({ token, slug: currentArticle.slug }));
+                        dispatch(fetchDeleteArticle({ token, slug: article.slug }));
                       }}
                     >
                       Yes
@@ -166,7 +184,7 @@ export default function ArticleHeader({
                 Delete
               </button>
             </Popover>
-            <Link to={`/articles/${currentArticle.slug}/edit`}>
+            <Link to={`/articles/${article.slug}/edit`}>
               <button
                 type="button"
                 className={`${classes['article__change-button']} ${classes['article__change-button--edit']}`}

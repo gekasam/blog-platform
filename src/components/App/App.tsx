@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 
 import AppHeader from '../AppHeader';
 import ArticlesList from '../ArticlesList';
@@ -25,18 +25,20 @@ function App() {
                 return <Article articleSlug={slug} />;
               }}
             />
-            <Route path="/sign-up" component={SignUp} />
-            <Route path="/sign-in" component={SignIn} />
-            <Route path="/profile" component={EditProfile} />
-            <Route path="/new-article" component={ArticleForm} />
+            <Route path="/sign-up" exact component={SignUp} />
+            <Route path="/sign-in" exact component={SignIn} />
+            <Route path="/profile" exact component={EditProfile} />
+            <Route path="/new-article" exact component={ArticleForm} />
             <Route
               path="/articles/:slug/edit"
+              exact
               render={({ match }) => {
                 const { slug } = match.params;
                 return <ArticleForm articleSlug={slug} />;
               }}
             />
-            <Route path="/" component={ArticlesList} />
+            <Route path="/" exact component={ArticlesList} />
+            <Redirect to="/" />
           </Switch>
         </main>
       </div>

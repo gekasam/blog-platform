@@ -21,13 +21,23 @@ const baseURL = 'https://blog.kata.academy/api';
 
 export const fetchArticles = createAsyncThunk<
   FetchState['articlesFetchData'],
-  number,
+  { offset: number; token: string | null },
   { rejectValue: string }
 >(
   'fetch/articles',
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async (offset, { rejectWithValue }) => {
-    const response = await fetch(`${baseURL}/articles?limit=5&offset=${offset}`);
+  async (args, { rejectWithValue }) => {
+    let response;
+    if (args.token) {
+      response = await fetch(`${baseURL}/articles?limit=5&offset=${args.offset}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Token ${args.token}`,
+        },
+      });
+    } else {
+      response = await fetch(`${baseURL}/articles?limit=5&offset=${args.offset}`);
+    }
     const data = await response.json();
     if (!response.ok) {
       return rejectWithValue(`Server Error ${response.status} ${data.errors.message}`);
@@ -36,11 +46,25 @@ export const fetchArticles = createAsyncThunk<
   }
 );
 
-export const fetchArticle = createAsyncThunk<Article, string, { rejectValue: string }>(
+export const fetchArticle = createAsyncThunk<
+  Article,
+  { slug: string; token: string | null },
+  { rejectValue: string }
+>(
   'fetch/article',
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async (slug, { rejectWithValue }) => {
-    const response = await fetch(`${baseURL}/articles/${slug}`);
+  async (args, { rejectWithValue }) => {
+    let response;
+    if (args.token) {
+      response = await fetch(`${baseURL}/articles/${args.slug}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Token ${args.token}`,
+        },
+      });
+    } else {
+      response = await fetch(`${baseURL}/articles/${args.slug}`);
+    }
     const data = await response.json();
     if (!response.ok) {
       return rejectWithValue(`Server Error ${response.status} ${data.errors.message}`);
@@ -193,6 +217,42 @@ export const fetchDeleteArticle = createAsyncThunk<
   return '';
 });
 
+export const fetchFavoriteArticle = createAsyncThunk<
+  Article,
+  { token: string; slug: string },
+  { rejectValue: string }
+>('fetch/favoriteArticle', async (args, { rejectWithValue }) => {
+  const response = await fetch(`${baseURL}/articles/${args.slug}/favorite`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Token ${args.token}`,
+    },
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    return rejectWithValue(data.errors.message);
+  }
+  return data.article;
+});
+
+export const fetchUnfavoriteArticle = createAsyncThunk<
+  Article,
+  { token: string; slug: string },
+  { rejectValue: string }
+>('fetch/unfavoriteArticle', async (args, { rejectWithValue }) => {
+  const response = await fetch(`${baseURL}/articles/${args.slug}/favorite`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Token ${args.token}`,
+    },
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    return rejectWithValue(data.errors.message);
+  }
+  return data.article;
+});
+
 const initialState: FetchState = {
   articlesFetchData: {
     articles: [],
@@ -280,6 +340,32 @@ const fetchSlice = createSlice({
       .addCase(fetchDeleteArticle.fulfilled, (state) => {
         state.loading = false;
         state.isDeleteSucsess = true;
+      })
+      .addCase(fetchFavoriteArticle.pending, (state) => {
+        state.error = '';
+        /* state.loading = true; */
+      })
+      .addCase(fetchFavoriteArticle.fulfilled, (state, action) => {
+        state.articlesFetchData.articles[
+          state.articlesFetchData.articles?.findIndex(
+            (article) => article.slug === action.payload.slug
+          )
+        ] = action.payload;
+        state.currentArticle = action.payload;
+        /* state.loading = false; */
+      })
+      .addCase(fetchUnfavoriteArticle.pending, (state) => {
+        state.error = '';
+        /* state.loading = true; */
+      })
+      .addCase(fetchUnfavoriteArticle.fulfilled, (state, action) => {
+        state.articlesFetchData.articles[
+          state.articlesFetchData.articles?.findIndex(
+            (article) => article.slug === action.payload.slug
+          )
+        ] = action.payload;
+        state.currentArticle = action.payload;
+        /* state.loading = false; */
       })
       .addCase(fetchCreateUser.pending, (state) => {
         state.error = '';

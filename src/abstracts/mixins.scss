@@ -13,8 +13,7 @@
 @mixin popup {
   content: attr(data-content);
   position: absolute;
-  top: 2rem;
-  left: 1rem;
+  transform: translate(2rem, 3.5rem);
   max-width: 50vw;
   background-color: var(--color-main-white);
   padding: 1rem;

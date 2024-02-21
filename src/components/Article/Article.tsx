@@ -9,11 +9,16 @@ import { fetchArticle } from '../../store/fetchSlice';
 import classes from './Article.module.scss';
 
 export default function Article({ articleSlug }: { articleSlug: string }) {
+  const token = localStorage.getItem('token');
   const { loading, currentArticle } = useAppSelector((state) => state.fetchSlice);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchArticle(articleSlug));
+    if (token) {
+      dispatch(fetchArticle({ slug: articleSlug, token }));
+    } else {
+      dispatch(fetchArticle({ slug: articleSlug, token: null }));
+    }
   }, [dispatch, articleSlug]);
 
   function renderArticle() {
