@@ -29,6 +29,8 @@ export default function ArticleHeader({
   const token = localStorage.getItem('token');
   const [deletePopupOpen, setDeletePopupOpen] = useState(false);
   const [isTitleOverflow, titleRef] = useDetectOverflow<HTMLHeadingElement>('horizontal');
+  const [isTagListOverflow, tagListRef] = useDetectOverflow<HTMLUListElement>('vertical');
+  const [tagListFull, setTagListFull] = useState(false);
   const [isDescriptionOverflow, descriptionRef] =
     useDetectOverflow<HTMLParagraphElement>('vertical');
   const {
@@ -61,6 +63,14 @@ export default function ArticleHeader({
   const titleClasses = classNames({
     [classes['article__title-wrap']]: true,
     [classes['article__title-wrap__popup']]: isTitleOverflow,
+  });
+
+  const tagListWrapClasses = classNames(classes['article__tag-list-wrap'], {
+    [classes['article__tag-list-wrap--full']]: tagListFull,
+  });
+
+  const tagListClasses = classNames(classes['article__tag-list'], {
+    [classes['article__tag-list--full']]: tagListFull,
   });
 
   const descriptionClasses = classNames({
@@ -100,7 +110,7 @@ export default function ArticleHeader({
   const likeClasses = classNames(classes.like, {
     [classes['like--disabled']]: !token,
   });
-
+  console.log(isTagListOverflow);
   return (
     <header className={headerClasses}>
       <div className={classes.article__header__top}>
@@ -120,7 +130,31 @@ export default function ArticleHeader({
               <span className={classes.like__count}>{article.favoritesCount}</span>
             </button>
           </div>
-          {tagItems.length ? <ul className={classes['article__tag-list']}>{tagItems}</ul> : null}
+          {tagItems.length ? (
+            <div className={tagListWrapClasses}>
+              <ul ref={tagListRef} className={tagListClasses}>
+                {tagItems}
+              </ul>
+              {isTagListOverflow && !tagListFull ? (
+                <button
+                  type="button"
+                  className={classes['article__tag-list__button-more']}
+                  onClick={() => setTagListFull(true)}
+                >
+                  More
+                </button>
+              ) : null}
+              {tagListFull ? (
+                <button
+                  type="button"
+                  className={classes['article__tag-list__button-more']}
+                  onClick={() => setTagListFull(false)}
+                >
+                  Hide
+                </button>
+              ) : null}
+            </div>
+          ) : null}
         </div>
         <div className={classes['article__additional-info']}>
           <div className={classes['article__additional-info__text']}>

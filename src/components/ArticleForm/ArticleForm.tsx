@@ -44,11 +44,9 @@ export default function ArticleForm({ articleSlug = null }: { articleSlug: strin
     formState: { submitCount, isSubmitting, errors },
   } = useForm<Inputs>({
     defaultValues: {
-      tags:
-        (currentArticle?.tagList && [
-          ...currentArticle.tagList.map((tag) => ({ name: `${tag}` })),
-        ]) ||
-        [],
+      tags: (currentArticle?.tagList && [
+        ...currentArticle.tagList.map((tag) => ({ name: `${tag}` })),
+      ]) || [{ name: '' }],
     },
   });
 
@@ -59,7 +57,7 @@ export default function ArticleForm({ articleSlug = null }: { articleSlug: strin
       dispatch(clearCurrentArticle());
       reset();
       reset({
-        tags: [],
+        tags: [{ name: '' }],
       });
     }
   }, [dispatch, articleSlug]);

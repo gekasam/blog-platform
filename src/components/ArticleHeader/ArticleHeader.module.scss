@@ -70,11 +70,43 @@
   cursor: default;
 }
 
+.article__tag-list-wrap {
+  position: relative;
+  padding: 0.2rem;
+  height: 50%;
+}
+
+.article__tag-list-wrap--full {
+  height: auto;
+  background-color: var(--color-main-white);
+  box-shadow: var(--box-shadow-main);
+  z-index: 1;
+}
+
 .article__tag-list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.8rem;
-  overflow: auto;
+  height: 100%;
+  overflow: hidden;
+}
+
+.article__tag-list--full {
+  height: auto;
+}
+
+.article__tag-list__button-more {
+  position: absolute;
+  bottom: 0.4rem;
+  right: -4.5rem;
+  padding: 0.1rem;
+  width: 4rem;
+  height: 2rem;
+  color: var(--color-blue);
+  background-color: var(--color-main-white);
+  box-shadow: var(--box-shadow-main);
+  border: 1px solid;
+  border-radius: 0.2rem;
 }
 
 .article__additional-info {
