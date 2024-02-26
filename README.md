@@ -1,1 +1,1 @@
-https://blog-platform-1zazmkugo-gekasam.vercel.app
+https://blog-platform-k00cf75yo-gekasam.vercel.app
