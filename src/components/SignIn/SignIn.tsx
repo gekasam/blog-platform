@@ -76,7 +76,7 @@ export default function SignIn() {
             Password
             <input
               className={dataInputClasses('password')}
-              type="text"
+              type="password"
               placeholder="Password"
               {...register('password', { required: 'This field is required' })}
             />

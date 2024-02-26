@@ -133,7 +133,7 @@ export default function EditProfile() {
             New Password
             <input
               className={dataInputClasses('password')}
-              type="text"
+              type="password"
               placeholder="Password"
               {...register('password', {
                 minLength: {
